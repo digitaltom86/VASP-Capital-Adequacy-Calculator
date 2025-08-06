@@ -55,7 +55,7 @@ st.markdown("""
 
 # Header
 st.markdown('<h1 class="main-header">AdmiPlatform VASP Capital Adequacy Calculator</h1>', unsafe_allow_html=True)
-st.markdown("**CIMA Rule Compliance Calculator for Virtual Asset Service Providers**")
+st.markdown("**CIMA Rule Compliance Calculator for Virtual Asset Custody Services**")
 
 # Sidebar for inputs
 st.sidebar.header("📊 Input Parameters")
@@ -63,10 +63,8 @@ st.sidebar.markdown("*Enter your business parameters to calculate capital requir
 
 # Company Information
 with st.sidebar.expander("🏢 Company Information", expanded=True):
-    # Company Information
-with st.sidebar.expander("🏢 Company Information", expanded=True):
     company_name = st.text_input("Company Name", value="AdmiPlatform Ltd.")
-    service_type = st.selectbox("Service Type", ["Custody Provider"])  # Fixed to custody only
+    service_type = st.selectbox("Service Type", ["Custody Provider"])
     calculation_date = st.date_input("Calculation Date", value=datetime.now().date())
     st.markdown("**Note:** *This calculator is configured specifically for Virtual Asset Custody Services*")
 
@@ -79,20 +77,20 @@ with st.sidebar.expander("📊 Business Projections", expanded=True):
     financial_data = {
         "Year 1 (2025)": {
             "custody_revenue": 766431,
-            "total_aum": 557480000,  # €557.48M
-            "fixed_overheads_monthly": 282474,  # Total Operating Expenses / 12
+            "total_aum": 557480000,
+            "fixed_overheads_monthly": 282474,
             "cash_equivalents": 854369
         },
         "Year 2 (2026)": {
             "custody_revenue": 1761258,
-            "total_aum": 1474200000,  # €1474.20M
-            "fixed_overheads_monthly": 597529,  # Total Operating Expenses / 12
+            "total_aum": 1474200000,
+            "fixed_overheads_monthly": 597529,
             "cash_equivalents": 11286899
         },
         "Year 3 (2027)": {
             "custody_revenue": 4754602,
-            "total_aum": 2882200000,  # €2882.20M
-            "fixed_overheads_monthly": 624668,  # Total Operating Expenses / 12
+            "total_aum": 2882200000,
+            "fixed_overheads_monthly": 624668,
             "cash_equivalents": 20126629
         }
     }
@@ -106,7 +104,7 @@ with st.sidebar.expander("📊 Business Projections", expanded=True):
     
     st.write(f"**Total AUM (USD): ${total_aum:,.0f}**")
     
-    # Asset breakdown (user can adjust percentages)
+    # Asset breakdown
     st.markdown("**Asset Allocation (%)**")
     btc_pct = st.slider("Bitcoin %", 0, 100, 40)
     eth_pct = st.slider("Ethereum %", 0, 100, 35)
@@ -117,7 +115,7 @@ with st.sidebar.expander("📊 Business Projections", expanded=True):
     aum_eth = total_aum * (eth_pct / 100)
     aum_other = total_aum * (other_pct / 100)
 
-# Fixed Overheads (Auto-populated from P&L)
+# Fixed Overheads
 with st.sidebar.expander("💸 Fixed Overheads (From P&L Projections)", expanded=True):
     monthly_fixed_overheads_eur = selected_data["fixed_overheads_monthly"]
     monthly_fixed_overheads = monthly_fixed_overheads_eur * eur_to_usd_rate
@@ -125,92 +123,57 @@ with st.sidebar.expander("💸 Fixed Overheads (From P&L Projections)", expanded
     st.markdown("**Operating Expenses (Auto-calculated from P&L)**")
     st.write(f"Monthly Fixed Overheads (EUR): €{monthly_fixed_overheads_eur:,.0f}")
     st.write(f"Monthly Fixed Overheads (USD): ${monthly_fixed_overheads:,.0f}")
-    
-    # Detailed breakdown (user can adjust if needed)
-    st.markdown("**Expense Breakdown (Adjustable)**")
-    operations_pct = st.slider("Operations %", 10, 60, 40)
-    sales_bd_pct = st.slider("Sales & Business Development %", 5, 30, 15)
-    tech_security_pct = st.slider("Technology Security Infrastructure %", 20, 50, 35)
-    legal_compliance_pct = st.slider("Legal, Compliance & Regulatory %", 5, 20, 10)
-    
-    operations = monthly_fixed_overheads * (operations_pct / 100)
-    sales_bd = monthly_fixed_overheads * (sales_bd_pct / 100)
-    tech_security = monthly_fixed_overheads * (tech_security_pct / 100)
-    legal_compliance = monthly_fixed_overheads * (legal_compliance_pct / 100)
-    
-    st.write(f"Operations: ${operations:,.0f}")
-    st.write(f"Sales & BD: ${sales_bd:,.0f}")
-    st.write(f"Tech & Security: ${tech_security:,.0f}")
-    st.write(f"Legal & Compliance: ${legal_compliance:,.0f}")
 
-# Risk Parameters (Custody-focused)
+# Risk Parameters
 with st.sidebar.expander("⚠️ Risk Parameters (Custody Provider)", expanded=True):
     st.markdown("**Custody-Specific Risk Weights**")
-    op_risk_weight = st.slider("Custody Operational Risk Weight (%)", min_value=0.1, max_value=2.0, value=0.5, step=0.1, 
-                              help="Lower risk weight for custody-only services vs trading platforms")
-    op_risk_factor = st.slider("Operational Risk Factor (Fixed Overhead Multiplier)", min_value=1.0, max_value=2.5, value=1.2, step=0.1,
-                              help="Conservative multiplier for custody operations")
-    volatility_factor = st.slider("Market Volatility Factor (%) - Treasury Holdings", min_value=10.0, max_value=50.0, value=30.0, step=5.0,
-                                 help="Applied only to company's own crypto holdings, not client assets")
-    counterparty_risk_weight = st.slider("Counterparty Risk Weight (%)", min_value=0.5, max_value=2.0, value=0.8, step=0.1,
-                                        help="Risk from banking partners, insurance providers, etc.")
-    liquidity_factor = st.slider("Liquidity Factor (%)", min_value=10.0, max_value=40.0, value=20.0, step=5.0,
-                                help="Conservative for custody operations")
+    op_risk_weight = st.slider("Custody Operational Risk Weight (%)", 
+                              min_value=0.1, max_value=2.0, value=0.5, step=0.1)
+    op_risk_factor = st.slider("Operational Risk Factor", 
+                              min_value=1.0, max_value=2.5, value=1.2, step=0.1)
+    volatility_factor = st.slider("Market Volatility Factor (%)", 
+                                 min_value=10.0, max_value=50.0, value=30.0, step=5.0)
+    counterparty_risk_weight = st.slider("Counterparty Risk Weight (%)", 
+                                        min_value=0.5, max_value=2.0, value=0.8, step=0.1)
+    liquidity_factor = st.slider("Liquidity Factor (%)", 
+                                min_value=10.0, max_value=40.0, value=20.0, step=5.0)
 
-# Capital Holdings (Based on Balance Sheet)
+# Capital Holdings
 with st.sidebar.expander("🏦 Capital Holdings (From Balance Sheet)", expanded=True):
     st.markdown("**Current Capital Position**")
     
     # Auto-populate from balance sheet data
     if projection_year == "Year 1 (2025)":
-        share_capital = 6850 * eur_to_usd_rate
-        share_premium = 8678150 * eur_to_usd_rate
-        retained_earnings = -1874366 * eur_to_usd_rate
         total_equity = 6810634 * eur_to_usd_rate
     elif projection_year == "Year 2 (2026)":
-        share_capital = 9748 * eur_to_usd_rate
-        share_premium = 21175252 * eur_to_usd_rate
-        retained_earnings = -669362 * eur_to_usd_rate
         total_equity = 20515638 * eur_to_usd_rate
     else:  # Year 3 (2027)
-        share_capital = 9748 * eur_to_usd_rate
-        share_premium = 21175252 * eur_to_usd_rate
-        retained_earnings = 8324237 * eur_to_usd_rate
         total_equity = 29509237 * eur_to_usd_rate
     
     st.write(f"**Total Equity (from Balance Sheet): ${total_equity:,.0f}**")
     
-    # Allow manual adjustment if needed
-    tier1_capital = st.number_input("Tier 1 Capital (USD)", value=float(max(0, total_equity)), step=50000.0,
-                                   help="Equity capital available for regulatory purposes")
-    tier2_capital = st.number_input("Tier 2 Capital (USD)", min_value=0.0, value=0.0, step=50000.0,
-                                   help="Subordinated debt or other qualifying instruments")
+    tier1_capital = st.number_input("Tier 1 Capital (USD)", value=float(max(0, total_equity)), step=50000.0)
+    tier2_capital = st.number_input("Tier 2 Capital (USD)", min_value=0.0, value=0.0, step=50000.0)
     
-    # Treasury crypto holdings (separate from client custody)
-    va_capital_holdings = st.number_input("Company's Own Crypto Holdings (USD)", min_value=0.0, value=50000.0, step=10000.0,
-                                         help="Company's treasury crypto (NOT client assets)")
+    va_capital_holdings = st.number_input("Company's Own Crypto Holdings (USD)", 
+                                         min_value=0.0, value=50000.0, step=10000.0)
     
-    # Other exposures
-    counterparty_exposure = st.number_input("Banking/Counterparty Exposure (USD)", min_value=0.0, 
-                                          value=float(selected_data["cash_equivalents"] * eur_to_usd_rate), step=10000.0,
-                                          help="Exposure to banks, service providers, etc.")
+    counterparty_exposure = st.number_input("Banking/Counterparty Exposure (USD)", 
+                                          min_value=0.0, 
+                                          value=float(selected_data["cash_equivalents"] * eur_to_usd_rate), 
+                                          step=10000.0)
     
-    # Cash flow projections for liquidity risk
-    projected_monthly_withdrawals = total_aum * 0.05  # Assume 5% monthly turnover
-    projected_cash_outflow = st.number_input("30-Day Projected Cash Outflow (USD)", min_value=0.0, 
-                                            value=float(projected_monthly_withdrawals), step=10000.0,
-                                            help="Estimated client withdrawals and operational needs")
-
-# Main calculation area
-
-# Main calculation area
-col1, col2 = st.columns([2, 1])
+    projected_monthly_withdrawals = total_aum * 0.05
+    projected_cash_outflow = st.number_input("30-Day Projected Cash Outflow (USD)", 
+                                            min_value=0.0, 
+                                            value=float(projected_monthly_withdrawals), 
+                                            step=10000.0)
 
 # Main calculation area
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    # P&L Business Context
+    # Business Context
     st.header("📊 AdmiPlatform Business Overview")
     
     projected_revenue = selected_data["custody_revenue"] * eur_to_usd_rate
@@ -228,103 +191,23 @@ with col1:
     # Risk-Based Capital Calculation
     st.header("📈 Risk-Based Capital (RBC) Calculation")
     
-    # Operational Capital Charge
+    # Calculate components
     op_aum_charge = total_aum * (op_risk_weight / 100)
     op_overhead_charge = monthly_fixed_overheads * op_risk_factor
     operational_capital_charge = op_aum_charge + op_overhead_charge
     
-    # Market Capital Charge
     market_capital_charge = va_capital_holdings * (volatility_factor / 100)
-    
-    # Credit Capital Charge
     credit_capital_charge = counterparty_exposure * (counterparty_risk_weight / 100)
-    
-    # Liquidity Capital Charge
     liquidity_capital_charge = projected_cash_outflow * (liquidity_factor / 100)
     
-    # Total RBC
     total_rbc = operational_capital_charge + market_capital_charge + credit_capital_charge + liquidity_capital_charge
-    
-    # Fixed Overheads Capital (6 months)
     fixed_overheads_capital = monthly_fixed_overheads * 6
-    
-    # Final Capital Requirement
     capital_requirement = max(total_rbc, fixed_overheads_capital)
     
-    # Total Eligible Capital
     total_eligible_capital = tier1_capital + tier2_capital
-    
-    # Capital Adequacy Ratio
     capital_adequacy_ratio = (total_eligible_capital / capital_requirement) * 100 if capital_requirement > 0 else 0
     
-    # Display detailed breakdown
-    breakdown_data = {
-        'Component': [
-            'Operational Capital Charge (AUM)',
-            'Operational Capital Charge (Overheads)',
-            'Market Capital Charge',
-            'Credit Capital Charge',
-            'Liquidity Capital Charge',
-            'Total Risk-Based Capital',
-            'Fixed Overheads Capital (6 months)',
-            'Final Capital Requirement'
-        ],
-        'Calculation': [
-            f"${total_aum:,.0f} × {op_risk_weight}%",
-            f"${monthly_fixed_overheads:,.0f} × {op_risk_factor}",
-            f"${va_capital_holdings:,.0f} × {volatility_factor}%",
-            f"${counterparty_exposure:,.0f} × {counterparty_risk_weight}%",
-            f"${projected_cash_outflow:,.0f} × {liquidity_factor}%",
-            "Sum of above charges",
-            f"${monthly_fixed_overheads:,.0f} × 6 months",
-            "Max(RBC, Fixed Overheads)"
-        ],
-        'Amount (USD)': [
-            f"${op_aum_charge:,.0f}",
-            f"${op_overhead_charge:,.0f}",
-            f"${market_capital_charge:,.0f}",
-            f"${credit_capital_charge:,.0f}",
-            f"${liquidity_capital_charge:,.0f}",
-            f"${total_rbc:,.0f}",
-            f"${fixed_overheads_capital:,.0f}",
-            f"${capital_requirement:,.0f}"
-        ]
-    }
-    
-    df_breakdown = pd.DataFrame(breakdown_data)
-    st.dataframe(df_breakdown, use_container_width=True)
-    st.header("📈 Risk-Based Capital (RBC) Calculation")
-    
-    # Operational Capital Charge
-    op_aum_charge = total_aum * (op_risk_weight / 100)
-    op_overhead_charge = monthly_fixed_overheads * op_risk_factor
-    operational_capital_charge = op_aum_charge + op_overhead_charge
-    
-    # Market Capital Charge
-    market_capital_charge = va_capital_holdings * (volatility_factor / 100)
-    
-    # Credit Capital Charge
-    credit_capital_charge = counterparty_exposure * (counterparty_risk_weight / 100)
-    
-    # Liquidity Capital Charge
-    liquidity_capital_charge = projected_cash_outflow * (liquidity_factor / 100)
-    
-    # Total RBC
-    total_rbc = operational_capital_charge + market_capital_charge + credit_capital_charge + liquidity_capital_charge
-    
-    # Fixed Overheads Capital (6 months)
-    fixed_overheads_capital = monthly_fixed_overheads * 6
-    
-    # Final Capital Requirement
-    capital_requirement = max(total_rbc, fixed_overheads_capital)
-    
-    # Total Eligible Capital
-    total_eligible_capital = tier1_capital + tier2_capital
-    
-    # Capital Adequacy Ratio
-    capital_adequacy_ratio = (total_eligible_capital / capital_requirement) * 100 if capital_requirement > 0 else 0
-    
-    # Display detailed breakdown
+    # Display breakdown
     breakdown_data = {
         'Component': [
             'Operational Capital Charge (AUM)',
@@ -364,26 +247,13 @@ with col1:
     # Charts
     st.subheader("📊 Capital Requirement Breakdown")
     
-    # RBC Components breakdown using native Streamlit charts
     rbc_components = pd.DataFrame({
         'Component': ['Operational (AUM)', 'Operational (Overheads)', 'Market', 'Credit', 'Liquidity'],
-        'Amount': [op_aum_charge, op_overhead_charge, market_capital_charge, credit_capital_charge, liquidity_capital_charge],
-        'Percentage': [
-            (op_aum_charge / total_rbc * 100) if total_rbc > 0 else 0,
-            (op_overhead_charge / total_rbc * 100) if total_rbc > 0 else 0,
-            (market_capital_charge / total_rbc * 100) if total_rbc > 0 else 0,
-            (credit_capital_charge / total_rbc * 100) if total_rbc > 0 else 0,
-            (liquidity_capital_charge / total_rbc * 100) if total_rbc > 0 else 0
-        ]
+        'Amount': [op_aum_charge, op_overhead_charge, market_capital_charge, credit_capital_charge, liquidity_capital_charge]
     })
     
     st.write("**Risk-Based Capital Components:**")
     st.bar_chart(rbc_components.set_index('Component')['Amount'])
-    
-    # Display component breakdown table
-    rbc_components['Amount'] = rbc_components['Amount'].apply(lambda x: f"${x:,.0f}")
-    rbc_components['Percentage'] = rbc_components['Percentage'].apply(lambda x: f"{x:.1f}%")
-    st.dataframe(rbc_components, use_container_width=True)
     
     # Capital methods comparison
     st.write("**Capital Requirement Methods Comparison:**")
@@ -413,7 +283,8 @@ with col2:
         status_text = "❌ NON-COMPLIANT"
         status_message = "Capital adequacy ratio below minimum requirement"
     
-    st.markdown(f'<div class="{status_color}"><strong>{status_text}</strong><br>{status_message}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="{status_color}"><strong>{status_text}</strong><br>{status_message}</div>', 
+                unsafe_allow_html=True)
     
     # Key metrics
     metrics = [
@@ -430,10 +301,9 @@ with col2:
     for metric, value in metrics:
         st.metric(metric, value)
     
-    # Stress Testing Section
+    # Stress Testing
     st.subheader("🧪 Stress Testing")
     
-    # Custody-specific stress scenarios
     stress_scenarios = {
         "Market Crash (30% AUM decline)": {"aum_decline": 0.3, "type": "aum"},
         "Crypto Bear Market (60% volatility)": {"volatility": 0.6, "type": "volatility"}, 
@@ -471,7 +341,7 @@ with col2:
             st.write(f"Additional capital needed: ${additional_capital_needed:,.0f}")
         st.write("---")
 
-# Additional Information
+# Regulatory Framework Compliance
 st.header("📚 Regulatory Framework Compliance")
 
 compliance_items = [
@@ -494,13 +364,14 @@ with col2:
     for item in compliance_items[4:]:
         st.write(item)
 
-# Export functionality
+# Report Generation
 st.header("📄 Report Generation")
 
 if st.button("Generate Capital Adequacy Report", type="primary"):
     report_data = {
         "Company": company_name,
         "Calculation Date": calculation_date.strftime("%Y-%m-%d"),
+        "Projection Year": projection_year,
         "Service Type": service_type,
         "Total AUM (USD)": f"{total_aum:,.0f}",
         "Monthly Fixed Overheads (USD)": f"{monthly_fixed_overheads:,.0f}",
@@ -521,7 +392,6 @@ if st.button("Generate Capital Adequacy Report", type="primary"):
     st.subheader("📊 Capital Adequacy Report Summary")
     st.dataframe(report_df, use_container_width=True)
     
-    # Download button
     csv = report_df.to_csv(index=False)
     st.download_button(
         label="Download Report as CSV",
