@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
-import plotly.express as px
 from datetime import datetime, timedelta
 import math
 
@@ -185,33 +183,37 @@ with col1:
     # Charts
     st.subheader("📊 Capital Requirement Breakdown")
     
-    # Pie chart for RBC components
-    fig_pie = go.Figure(data=[go.Pie(
-        labels=['Operational (AUM)', 'Operational (Overheads)', 'Market', 'Credit', 'Liquidity'],
-        values=[op_aum_charge, op_overhead_charge, market_capital_charge, credit_capital_charge, liquidity_capital_charge],
-        hole=0.3,
-        hovertemplate='<b>%{label}</b><br>Amount: $%{value:,.0f}<br>Percentage: %{percent}<extra></extra>'
-    )])
-    fig_pie.update_layout(title="Risk-Based Capital Components", height=400)
-    st.plotly_chart(fig_pie, use_container_width=True)
-    
-    # Bar chart comparison
-    comparison_data = pd.DataFrame({
-        'Method': ['Risk-Based Capital', 'Fixed Overheads Capital'],
-        'Amount': [total_rbc, fixed_overheads_capital],
-        'Selected': [capital_requirement == total_rbc, capital_requirement == fixed_overheads_capital]
+    # RBC Components breakdown using native Streamlit charts
+    rbc_components = pd.DataFrame({
+        'Component': ['Operational (AUM)', 'Operational (Overheads)', 'Market', 'Credit', 'Liquidity'],
+        'Amount': [op_aum_charge, op_overhead_charge, market_capital_charge, credit_capital_charge, liquidity_capital_charge],
+        'Percentage': [
+            (op_aum_charge / total_rbc * 100) if total_rbc > 0 else 0,
+            (op_overhead_charge / total_rbc * 100) if total_rbc > 0 else 0,
+            (market_capital_charge / total_rbc * 100) if total_rbc > 0 else 0,
+            (credit_capital_charge / total_rbc * 100) if total_rbc > 0 else 0,
+            (liquidity_capital_charge / total_rbc * 100) if total_rbc > 0 else 0
+        ]
     })
     
-    fig_bar = px.bar(
-        comparison_data, 
-        x='Method', 
-        y='Amount',
-        color='Selected',
-        color_discrete_map={True: '#10b981', False: '#6b7280'},
-        title="Capital Requirement Methods Comparison"
-    )
-    fig_bar.update_layout(showlegend=False, height=400)
-    st.plotly_chart(fig_bar, use_container_width=True)
+    st.write("**Risk-Based Capital Components:**")
+    st.bar_chart(rbc_components.set_index('Component')['Amount'])
+    
+    # Display component breakdown table
+    rbc_components['Amount'] = rbc_components['Amount'].apply(lambda x: f"${x:,.0f}")
+    rbc_components['Percentage'] = rbc_components['Percentage'].apply(lambda x: f"{x:.1f}%")
+    st.dataframe(rbc_components, use_container_width=True)
+    
+    # Capital methods comparison
+    st.write("**Capital Requirement Methods Comparison:**")
+    comparison_data = pd.DataFrame({
+        'Risk-Based Capital': [total_rbc],
+        'Fixed Overheads Capital': [fixed_overheads_capital]
+    })
+    st.bar_chart(comparison_data)
+    
+    selected_method = "Risk-Based Capital" if capital_requirement == total_rbc else "Fixed Overheads Capital"
+    st.write(f"**Selected Method:** {selected_method} (${capital_requirement:,.0f})")
 
 with col2:
     st.header("📋 Summary Results")
