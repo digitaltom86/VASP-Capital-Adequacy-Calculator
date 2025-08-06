@@ -202,6 +202,11 @@ with st.sidebar.expander("🏦 Capital Holdings (From Balance Sheet)", expanded=
                                             help="Estimated client withdrawals and operational needs")
 
 # Main calculation area
+
+# Main calculation area
+col1, col2 = st.columns([2, 1])
+
+# Main calculation area
 col1, col2 = st.columns([2, 1])
 
 with col1:
@@ -221,6 +226,73 @@ with col1:
         st.metric("Monthly Operating Expenses", f"${monthly_fixed_overheads:,.0f}")
     
     # Risk-Based Capital Calculation
+    st.header("📈 Risk-Based Capital (RBC) Calculation")
+    
+    # Operational Capital Charge
+    op_aum_charge = total_aum * (op_risk_weight / 100)
+    op_overhead_charge = monthly_fixed_overheads * op_risk_factor
+    operational_capital_charge = op_aum_charge + op_overhead_charge
+    
+    # Market Capital Charge
+    market_capital_charge = va_capital_holdings * (volatility_factor / 100)
+    
+    # Credit Capital Charge
+    credit_capital_charge = counterparty_exposure * (counterparty_risk_weight / 100)
+    
+    # Liquidity Capital Charge
+    liquidity_capital_charge = projected_cash_outflow * (liquidity_factor / 100)
+    
+    # Total RBC
+    total_rbc = operational_capital_charge + market_capital_charge + credit_capital_charge + liquidity_capital_charge
+    
+    # Fixed Overheads Capital (6 months)
+    fixed_overheads_capital = monthly_fixed_overheads * 6
+    
+    # Final Capital Requirement
+    capital_requirement = max(total_rbc, fixed_overheads_capital)
+    
+    # Total Eligible Capital
+    total_eligible_capital = tier1_capital + tier2_capital
+    
+    # Capital Adequacy Ratio
+    capital_adequacy_ratio = (total_eligible_capital / capital_requirement) * 100 if capital_requirement > 0 else 0
+    
+    # Display detailed breakdown
+    breakdown_data = {
+        'Component': [
+            'Operational Capital Charge (AUM)',
+            'Operational Capital Charge (Overheads)',
+            'Market Capital Charge',
+            'Credit Capital Charge',
+            'Liquidity Capital Charge',
+            'Total Risk-Based Capital',
+            'Fixed Overheads Capital (6 months)',
+            'Final Capital Requirement'
+        ],
+        'Calculation': [
+            f"${total_aum:,.0f} × {op_risk_weight}%",
+            f"${monthly_fixed_overheads:,.0f} × {op_risk_factor}",
+            f"${va_capital_holdings:,.0f} × {volatility_factor}%",
+            f"${counterparty_exposure:,.0f} × {counterparty_risk_weight}%",
+            f"${projected_cash_outflow:,.0f} × {liquidity_factor}%",
+            "Sum of above charges",
+            f"${monthly_fixed_overheads:,.0f} × 6 months",
+            "Max(RBC, Fixed Overheads)"
+        ],
+        'Amount (USD)': [
+            f"${op_aum_charge:,.0f}",
+            f"${op_overhead_charge:,.0f}",
+            f"${market_capital_charge:,.0f}",
+            f"${credit_capital_charge:,.0f}",
+            f"${liquidity_capital_charge:,.0f}",
+            f"${total_rbc:,.0f}",
+            f"${fixed_overheads_capital:,.0f}",
+            f"${capital_requirement:,.0f}"
+        ]
+    }
+    
+    df_breakdown = pd.DataFrame(breakdown_data)
+    st.dataframe(df_breakdown, use_container_width=True)
     st.header("📈 Risk-Based Capital (RBC) Calculation")
     
     # Operational Capital Charge
