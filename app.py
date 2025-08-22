@@ -54,8 +54,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Header
-st.markdown('<h1 class="main-header">AdmiPlatform VASP Capital Adequacy Calculator</h1>', unsafe_allow_html=True)
-st.markdown("**CIMA Rule Compliance Calculator for Virtual Asset Custody Services**")
+st.markdown('<h1 class="main-header">AdmiPlatform Capital Adequacy Calculator</h1>', unsafe_allow_html=True)
+st.markdown("**CIMA Rule Section 8 Compliance - Virtual Asset Custodian Framework**")
+st.markdown("*Comprehensive methodology for calculating, maintaining, and monitoring capital adequacy*")
 
 # Sidebar for inputs
 st.sidebar.header("📊 Input Parameters")
@@ -97,12 +98,12 @@ with st.sidebar.expander("📊 Business Projections", expanded=True):
     
     selected_data = financial_data[projection_year]
     
-    st.markdown("**Assets Under Custody (Auto-populated from P&L)**")
-    total_aum_eur = st.number_input("Total AUM (EUR)", value=float(selected_data["total_aum"]), step=1000000.0)
+    st.markdown("**Assets Under Custody (AUC) - Auto-populated from P&L**")
+    total_auc_eur = st.number_input("Total AUC (EUR)", value=float(selected_data["total_aum"]), step=1000000.0)
     eur_to_usd_rate = st.number_input("EUR to USD Exchange Rate", min_value=1.0, max_value=1.5, value=1.08, step=0.01)
-    total_aum = total_aum_eur * eur_to_usd_rate
+    total_auc = total_auc_eur * eur_to_usd_rate
     
-    st.write(f"**Total AUM (USD): ${total_aum:,.0f}**")
+    st.write(f"**Total AUC (USD): ${total_auc:,.0f}**")
     
     # Asset breakdown
     st.markdown("**Asset Allocation (%)**")
@@ -111,32 +112,54 @@ with st.sidebar.expander("📊 Business Projections", expanded=True):
     other_pct = 100 - btc_pct - eth_pct
     st.write(f"Other Assets: {other_pct}%")
     
-    aum_btc = total_aum * (btc_pct / 100)
-    aum_eth = total_aum * (eth_pct / 100)
-    aum_other = total_aum * (other_pct / 100)
+    aum_btc = total_auc * (btc_pct / 100)
+    aum_eth = total_auc * (eth_pct / 100)
+    aum_other = total_auc * (other_pct / 100)
 
 # Fixed Overheads
 with st.sidebar.expander("💸 Fixed Overheads (From P&L Projections)", expanded=True):
     monthly_fixed_overheads_eur = selected_data["fixed_overheads_monthly"]
     monthly_fixed_overheads = monthly_fixed_overheads_eur * eur_to_usd_rate
     
-    st.markdown("**Operating Expenses (Auto-calculated from P&L)**")
+    st.markdown("**Fixed Overheads - AdmiPlatform Specific**")
     st.write(f"Monthly Fixed Overheads (EUR): €{monthly_fixed_overheads_eur:,.0f}")
     st.write(f"Monthly Fixed Overheads (USD): ${monthly_fixed_overheads:,.0f}")
+    
+    st.markdown("**Components include:**")
+    st.write("• Salaries for permanent staff recharged to Cayman entity")
+    st.write("• Software licenses and subscription fees") 
+    st.write("• Insurance premiums")
+    st.write("• Professional fees (legal, audit, compliance)")
+    st.write("• Essential IT infrastructure and maintenance costs")
+    st.write("• Marketing and administrative expenses")
 
 # Risk Parameters
-with st.sidebar.expander("⚠️ Risk Parameters (Custody Provider)", expanded=True):
-    st.markdown("**Custody-Specific Risk Weights**")
-    op_risk_weight = st.slider("Custody Operational Risk Weight (%)", 
-                              min_value=0.1, max_value=2.0, value=0.5, step=0.1)
-    op_risk_factor = st.slider("Operational Risk Factor", 
-                              min_value=1.0, max_value=2.5, value=1.2, step=0.1)
-    volatility_factor = st.slider("Market Volatility Factor (%)", 
-                                 min_value=10.0, max_value=50.0, value=30.0, step=5.0)
+with st.sidebar.expander("⚠️ Risk Parameters - AdmiPlatform Framework", expanded=True):
+    st.markdown("**Risk-Based Capital (RBC) Components**")
+    st.write("RBC = OpCC + MCC + CrCC + LiCC")
+    
+    st.markdown("**a. Operational Capital Charge (OpCC)**")
+    op_risk_weight = st.slider("OpRisk Weight - AUC (%)", 
+                              min_value=0.1, max_value=3.0, value=2.0, step=0.1,
+                              help="Applied to AUC for cybersecurity, key management, fraud risks")
+    op_risk_factor = st.slider("OpRisk Factor - Fixed Overheads", 
+                              min_value=1.0, max_value=2.5, value=1.5, step=0.1,
+                              help="Multiplier for cost overruns, remediation expenses")
+    
+    st.markdown("**b. Market Capital Charge (MCC)**")
+    volatility_factor = st.slider("Volatility Factor (%)", 
+                                 min_value=10.0, max_value=60.0, value=40.0, step=5.0,
+                                 help="Based on 12+ months historical data, VaR methodology")
+    
+    st.markdown("**c. Credit Capital Charge (CrCC)**")
     counterparty_risk_weight = st.slider("Counterparty Risk Weight (%)", 
-                                        min_value=0.5, max_value=2.0, value=0.8, step=0.1)
+                                        min_value=0.5, max_value=3.0, value=1.0, step=0.1,
+                                        help="Banking partners, service providers exposure")
+    
+    st.markdown("**d. Liquidity Capital Charge (LiCC)**")
     liquidity_factor = st.slider("Liquidity Factor (%)", 
-                                min_value=10.0, max_value=40.0, value=20.0, step=5.0)
+                                min_value=10.0, max_value=40.0, value=25.0, step=5.0,
+                                help="30-day stress scenario buffer")
 
 # Capital Holdings
 with st.sidebar.expander("🏦 Capital Holdings (From Balance Sheet)", expanded=True):
