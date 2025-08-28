@@ -6,7 +6,7 @@ import math
 
 # Page configuration
 st.set_page_config(
-    page_title="AdmiPlatform VASP Capital Adequacy Calculator",
+    page_title="VASP Capital Adequacy Calculator",
     page_icon="💰",
     layout="wide",
     initial_sidebar_state="expanded"
